@@ -5,8 +5,10 @@
 
 {%- if grains['osmajorrelease'] < 8 %}
 {% set plugin_artifact_registry_format = 'yum' %}
+{% set plugin_artifact_registry_config = '/etc/yum/pluginconf.d/artifact-registry.conf' %}
 {% else %}
 {% set plugin_artifact_registry_format = 'dnf' %}
+{% set plugin_artifact_registry_config = '/etc/dnf/plugins/artifact-registry.conf' %}
 {% endif -%}
 
 {% if gc_ar_yumrepo.use | to_bool %}
@@ -29,11 +31,20 @@ google-cloud-artifact-registry-plugin:
       - Google_Cloud_Packages_RPM_Signing_Key
       - pkgrepo: google-cloud-artifact-registry-plugin
 
-google-cloud-service-account-file:
+{{ gc_ar_yumrepo.service_account_file_path }}:
   file.managed:
-    - name: {{ gc_ar_yumrepo.service_account_file_path }}
     - contents: |
         {{ gc_ar_yumrepo.service_account|json }}
+
+{{ plugin_artifact_registry_format }}-plugin-artifact-registry-config:
+  file.line:
+    - name: {{ plugin_artifact_registry_config }}
+    - content: 'service_account_json = "{{ gc_ar_yumrepo.service_account_file_path }}"'
+    - mode: ensure
+    - after: "#service_account_json.*"
+    - require:
+      - pkg: {{ plugin_artifact_registry_format }}-plugin-artifact-registry
+      - file: {{ gc_ar_yumrepo.service_account_file_path }}
 
 {% else %}
 
