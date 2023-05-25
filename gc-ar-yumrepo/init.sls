@@ -22,11 +22,24 @@ google-cloud-artifact-registry-plugin:
     - gpgkey: {{ gc_ar_yumrepo.ar_plugin_gpgkey }}
     - gpgcheck: 1
 
+{{ plugin_artifact_registry_format }}-plugin-artifact-registry:
+  pkg.installed:
+    - refresh: true
+    - require:
+      - Google_Cloud_Packages_RPM_Signing_Key
+      - pkgrepo: google-cloud-artifact-registry-plugin
+
 {% else %}
 
-uninstalled_google-cloud-artifact-registry-plugin:
+{{ plugin_artifact_registry_format }}-plugin-artifact-registry:
+  pkg.removed:
+    - required_in:
+      - removed_Google_Cloud_Packages_RPM_Signing_Key
+
+google-cloud-artifact-registry-plugin:
   pkgrepo.absent:
-    - name: google-cloud-artifact-registry-plugin
+    - require:
+      - pkg: {{ plugin_artifact_registry_format }}-plugin-artifact-registry
 
 removed_Google_Cloud_Packages_RPM_Signing_Key:
   rpm_.removed_gpg_key:
