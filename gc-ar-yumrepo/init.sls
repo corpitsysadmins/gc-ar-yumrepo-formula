@@ -29,7 +29,17 @@ google-cloud-artifact-registry-plugin:
       - Google_Cloud_Packages_RPM_Signing_Key
       - pkgrepo: google-cloud-artifact-registry-plugin
 
+google-cloud-service-account-file:
+  file.managed:
+    - name: {{ gc_ar_yumrepo.service_account_file_path }}
+    - contents: |
+        {{ gc_ar_yumrepo.service_account|json }}
+
 {% else %}
+
+google-cloud-service-account-file:
+  file.absent:
+    - name: {{ gc_ar_yumrepo.service_account_file_path }}
 
 {{ plugin_artifact_registry_format }}-plugin-artifact-registry:
   pkg.removed:
