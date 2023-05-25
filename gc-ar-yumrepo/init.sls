@@ -54,7 +54,28 @@ google-cloud-artifact-registry-plugin:
     - require:
       - file: {{ plugin_artifact_registry_format }}-plugin-artifact-registry-config
 
+{% if gc_ar_yumrepo.install_packages is defined %}
+
+{{ gc_ar_yumrepo.repository_name }}-install-packages:
+  pkg.installed:
+    - pkgs: {{ gc_ar_yumrepo.install_packages|json }}
+    - refresh: true
+    - require:
+      - {{ gc_ar_yumrepo.repository_name }}
+
+{% endif %}
+
 {% else %}
+
+{% if gc_ar_yumrepo.install_packages is defined %}
+
+{{ gc_ar_yumrepo.repository_name }}-install-packages:
+  pkg.removed:
+    - pkgs: gc_ar_yumrepo.install_packages
+    - required_in:
+      - pkgrepo: {{ gc_ar_yumrepo.repository_name }}
+
+{% endif %}
 
 {{ gc_ar_yumrepo.repository_name }}:
   pkgrepo.absent:
