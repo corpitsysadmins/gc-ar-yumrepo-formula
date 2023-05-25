@@ -18,7 +18,7 @@ Google_Cloud_Packages_RPM_Signing_Key:
 google-cloud-artifact-registry-plugin:
   pkgrepo.managed:
     - humanname: Artifact Registry Plugin
-    - baseurl: https://packages.cloud.google.com/yum/repos/{{ plugin_artifact_registry_format }}-plugin-artifact-registry-$releasever-stable
+    - baseurl: https://packages.cloud.google.com/yum/repos/{{ plugin_artifact_registry_format }}-plugin-artifact-registry-el$releasever-stable
     - gpgkey: {{ gc_ar_yumrepo.ar_plugin_gpgkey }}
     - gpgcheck: 1
 
