@@ -39,7 +39,7 @@ google-cloud-artifact-registry-plugin:
 {{ plugin_artifact_registry_format }}-plugin-artifact-registry-config:
   file.line:
     - name: {{ plugin_artifact_registry_config }}
-    - content: 'service_account_json = "{{ gc_ar_yumrepo.service_account_file_path }}"'
+    - content: 'service_account_json={{ gc_ar_yumrepo.service_account_file_path }}'
     - mode: ensure
     - after: "#service_account_json.*"
     - require:
