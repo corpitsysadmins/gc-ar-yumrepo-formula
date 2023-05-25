@@ -71,7 +71,7 @@ google-cloud-artifact-registry-plugin:
 
 {{ gc_ar_yumrepo.repository_name }}-install-packages:
   pkg.removed:
-    - pkgs: gc_ar_yumrepo.install_packages
+    - pkgs: {{ gc_ar_yumrepo.install_packages|json }}
     - required_in:
       - pkgrepo: {{ gc_ar_yumrepo.repository_name }}
 
