@@ -46,11 +46,25 @@ google-cloud-artifact-registry-plugin:
       - pkg: {{ plugin_artifact_registry_format }}-plugin-artifact-registry
       - file: {{ gc_ar_yumrepo.service_account_file_path }}
 
+{{ gc_ar_yumrepo.repository_name }}:
+  pkgrepo.managed:
+    - baseurl: https://{{ gc_ar_yumrepo.location }}-yum.pkg.dev/projects/{{ gc_ar_yumrepo.project_name }}/{{ gc_ar_yumrepo.repository_name }}
+    - repo_gpgcheck: 0
+    - gpgcheck: 0
+    - require:
+      - file: {{ plugin_artifact_registry_format }}-plugin-artifact-registry-config
+
 {% else %}
 
-google-cloud-service-account-file:
+{{ gc_ar_yumrepo.repository_name }}:
+  pkgrepo.absent:
+    - required_in:
+      - file: {{ gc_ar_yumrepo.service_account_file_path }}
+
+{{ gc_ar_yumrepo.service_account_file_path }}:
   file.absent:
-    - name: {{ gc_ar_yumrepo.service_account_file_path }}
+    - required_in:
+      - pkg: {{ plugin_artifact_registry_format }}-plugin-artifact-registry
 
 {{ plugin_artifact_registry_format }}-plugin-artifact-registry:
   pkg.removed:
@@ -59,10 +73,10 @@ google-cloud-service-account-file:
 
 google-cloud-artifact-registry-plugin:
   pkgrepo.absent:
-    - require:
-      - pkg: {{ plugin_artifact_registry_format }}-plugin-artifact-registry
+    - required_in:
+      - Google_Cloud_Packages_RPM_Signing_Key
 
-removed_Google_Cloud_Packages_RPM_Signing_Key:
+Google_Cloud_Packages_RPM_Signing_Key:
   rpm_.removed_gpg_key:
     - key_path: {{ gc_ar_yumrepo.gc_ar_packages_rpm_signing_key }}
 
